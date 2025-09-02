@@ -973,4 +973,5 @@ class PublicConsultationApp(App):
 
 
 if __name__ == '__main__':
+
     PublicConsultationApp().run()
