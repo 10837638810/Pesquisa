@@ -1,4 +1,7 @@
+from kivy.uix.boxlayout import BoxLayout
+from kivy.graphics import Color, Rectangle
 import kivy
+from kivy.graphics import Color
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
@@ -145,17 +148,18 @@ class BaseScreen(Screen):
             disabled=True # Inicia desabilitado para não interceptar toques
         )
 
-        menu_background = BoxLayout(
-            orientation='vertical',
-            size_hint=(1, 1),
-            padding=20,
-            spacing=15,
-            background_color=(0.1, 0.1, 0.1, 0.9), # Fundo escuro semitransparente
-            canvas.before=(
-                kivy.graphics.Color(0.1, 0.1, 0.1, 0.9),
-                kivy.graphics.Rectangle(pos=self.menu_drawer.pos, size=self.menu_drawer.size)
-            )
-        )
+        menu_background = BoxLayout
+        orientation='vertical',
+        size_hint=(1, 1),
+        padding=20,
+        spacing=15,
+        background_color=(0.1, 0.1, 0.1, 0.9), # Fundo escuro semitransparente
+        with self.canvas:
+            kivy.graphics.Color(0.1, 0.1, 0.1, 0.9),
+            kivy.graphics.Rectangle(pos=self.menu_drawer.pos, size=self.menu_drawer.size)
+            
+        
+        
         self.menu_drawer.add_widget(menu_background)
 
         # Botões do menu
@@ -258,10 +262,20 @@ class MainMenuScreen(BaseScreen):
                 background_color=(0.2, 0.6, 0.8, 1), # Cor primária azul
                 color=(1, 1, 1, 1)
             )
-            btn.bind(on_release=lambda btn_instance, screen=screen_name: self.manager.transition.direction='left' if self.manager.current == 'main_menu' else 'right', on_release=lambda btn_instance, screen=screen_name: setattr(self.manager, 'current', screen))
-            layout.add_widget(btn)
+            btn.bind(
+    on_release=lambda btn_instance, screen=screen_name: (
+        setattr(self.manager.transition, "direction", "left" if self.manager.current == "main_menu" else "right"),
+        setattr(self.manager, "current", screen)
+    )
+)
+        layout.add_widget(btn)
 
-        self.add_widget(layout)
+        def mudar_tela(btn_instance, screen):
+            self.manager.transition.direction = "left" if self.manager.current == "main_menu" else "right"
+            self.manager.current = screen
+
+        btn.bind(on_release=lambda btn_instance, screen=screen_name: mudar_tela(btn_instance, screen))
+        layout.add_widget(btn)
 
 
 class PersonSearchScreen(BaseScreen):
@@ -384,16 +398,16 @@ class VehicleSearchScreen(BaseScreen):
         main_layout.add_widget(vehicle_image_placeholder)
 
         # Campo de status do veículo
-        self.status_box = BoxLayout(
-            size_hint_y=None,
-            height=60,
-            padding=10,
-            spacing=10,
-            canvas.before=(
-                kivy.graphics.Color(*self.vehicle_status_color),
-                kivy.graphics.Rectangle(pos=self.pos, size=self.size)
-            )
-        )
+        self.status_box = BoxLayout
+        size_hint_y=None,
+        height=60,
+        padding=10,
+        spacing=10,
+        with self.canvas:
+            kivy.graphics.Color(*self.vehicle_status_color),
+            kivy.graphics.Rectangle(pos=self.pos, size=self.size)
+            
+        
         self.status_label = Label(
             text=self.vehicle_status_text,
             font_size='20sp',
